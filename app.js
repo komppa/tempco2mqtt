@@ -1,6 +1,7 @@
 const crypto = require('crypto')
 const axios = require('axios')
 const { getModeParams } = require('./modes')
+require('dotenv').config()
 
 const srv_addr = 'https://e3.lvi.eu'
 
@@ -134,14 +135,14 @@ const changeTemperature = async (token, smarthome_id, id_device, mode, celsius) 
 
 const app = async () => {
 
-    const username = 'my_email@example.com'
-    const password = 'my_password'
+    const user_email = process.env.USER_EMAIL
+    const user_password = process.env.USER_PASSWORD
 
-    const token = await login(username, password)
+    const token = await login(user_email, user_password)
     
     console.log("YOUR TOKEN IS ", token)
 
-    const smarthome_id = await getHomes(username, token)
+    const smarthome_id = await getHomes(user_email, token)
 
     console.log("YOUR SMARTHOME ID IS ", smarthome_id)
 
