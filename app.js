@@ -1,7 +1,9 @@
 const crypto = require('crypto')
 const axios = require('axios')
 const { getModeParams } = require('./modes')
-require('dotenv').config()
+require('dotenv').config({
+    path: process.env.PRODUCTION === "1" ? '.env' : '.env.local'
+})
 
 const srv_addr = 'https://e3.lvi.eu'
 

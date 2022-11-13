@@ -4,6 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
+    "dev": "cross-env PRODUCTION=0 node app.js",
+    "run": "cross-env PRODUCTION=1 node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -11,5 +13,8 @@
   "dependencies": {
     "axios": "^0.21.1",
     "dotenv": "^16.0.3"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
   }
 }
