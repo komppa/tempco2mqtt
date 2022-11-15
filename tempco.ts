@@ -1,16 +1,18 @@
 const crypto = require('crypto')
 const axios = require('axios')
-const { getModeParams } = require('./modes')
-require('dotenv').config({
-    path: process.env.PRODUCTION === "1" ? '.env' : '.env.local'
-})
+import { getModeParams } from './modes'
+import {
+    HeaderConfig,
+    Device,
+    Mode
+} from './tempco.d'
 
 const srv_addr = 'https://e3.lvi.eu'
 
-const hashPassword = (password) => crypto.createHash('md5').update(password).digest('hex')
+const hashPassword = (password: string): string => crypto.createHash('md5').update(password).digest('hex')
 
 
-const headers_config = {
+const headers_config: HeaderConfig = {
     headers: {
         "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0",
         "Accept": "application/json",
@@ -23,7 +25,7 @@ const headers_config = {
 
 
 
-const login = (username, password) => {
+const login = (username: string, password: string): Promise<string|Error>  => {
     return new Promise((res, rej) => {
 
         const params = new URLSearchParams()
@@ -47,7 +49,7 @@ const login = (username, password) => {
 }
 
 // Returns smarthome_id
-const getHomes = (email, token) => {
+const getHomes = (email: string, token: string): Promise<string|Error> => {
     return new Promise((res, rej) => {
 
         const params = new URLSearchParams()
@@ -68,7 +70,7 @@ const getHomes = (email, token) => {
     })
 }
 
-const getDevices = async (token, smarthome_id) => {
+const getDevices = async (token: string, smarthome_id: string): Promise<Array<Device>|Error> => {
     return new Promise((res, rej) => {
 
         const params = new URLSearchParams()
@@ -82,8 +84,7 @@ const getDevices = async (token, smarthome_id) => {
                     // Server does not give array of devices in a response,
                     // it gives object that contains objects with string keys.
                     // Convert it to object that consists array of objects
-                    const devices = Object.values(response.data.data.devices)
-                    
+                    const devices = <Array<Device>>Object.values(response.data.data.devices)
                     res(devices)
                 } catch (error) {
                     rej(error.message)
@@ -92,7 +93,7 @@ const getDevices = async (token, smarthome_id) => {
     })
 }
 
-const changeTemperature = async (token, smarthome_id, id_device, mode, celsius) => {
+const changeTemperature = async (token: string, smarthome_id: string, id_device: string, mode: Mode, celsius: number) => {
     return new Promise((res, rej) => {
 
         // Create packet for specific mode

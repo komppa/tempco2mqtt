@@ -1,24 +1,31 @@
+import {
+    Mode,
+    HouseTemperatureSelection
+} from './tempco.d'
+
 const modes = [
     'comfort',
     'hg',
     'off'
 ]
 
-const celsiusToFahrenheit = celsius => celsius * 1.8 + 32
+const celsiusToFahrenheit = (celsius: number) => celsius * 1.8 + 32
 
-const fahrenheitToCelsius = fahrenheit => (fahrenheit - 32) / 1.8
+const fahrenheitToCelsius = (fahrenheit: number) => (fahrenheit - 32) / 1.8
 
-const validateMode = (mode_name) => modes.includes(mode_name)
+const validateMode = (modeName: Mode): boolean => modes.includes(modeName)
 
-exports.getModeParams = (mode_name, options) => {
+export const getModeParams = (modeName: Mode, options: HouseTemperatureSelection) => {
 
     if (options.hasOwnProperty('celsius')) {
         options.temperature = Math.floor(celsiusToFahrenheit(options.celsius) * 10)
     }
-    
-    console.log("@modes mode", mode_name, " exists? ", validateMode(mode_name))
+
+    if (options.temperature === undefined)
+        return false
+        
     // Mode does not exist
-    if (!validateMode(mode_name)) {
+    if (!validateMode(modeName)) {
         return false
     }
 
@@ -34,12 +41,12 @@ exports.getModeParams = (mode_name, options) => {
     params.append('peremption', '15000')
     params.append('lang', 'fi_FI')
 
-    switch (mode_name) {
+    switch (modeName) {
 
         // confort
         case 'comfort':
-            params.append('query[consigne_confort]', options.temperature)
-            params.append('query[consigne_manuel]', options.temperature)
+            params.append('query[consigne_confort]', `${options.temperature}`)
+            params.append('query[consigne_manuel]', `${options.temperature}`)
             break
 
         case modes[0]:

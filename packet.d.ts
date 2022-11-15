@@ -1,4 +1,4 @@
-interface Device {
+interface DeviceConfig {
     identifiers: Array<string>,
     manufacturer: string,
     model: string,
@@ -12,7 +12,7 @@ interface ConfigPacket {
     availability: Array<{
         topic: string
     }>,
-    device: Device,
+    device: DeviceConfig,
     device_class: string,
     enabled_by_default: boolean,
     json_attributes_topic: string,
