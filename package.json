@@ -4,17 +4,21 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "dev": "cross-env PRODUCTION=0 node app.js",
-    "run": "cross-env PRODUCTION=1 node app.js",
+    "dev": "cross-env PRODUCTION=0 ts-node app.ts",
+    "run": "cross-env PRODUCTION=1 ts-node app.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
     "axios": "^0.21.1",
-    "dotenv": "^16.0.3"
+    "dotenv": "^16.0.3",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.4"
   },
   "devDependencies": {
+    "@types/dotenv": "^8.2.0",
+    "@types/node": "^18.11.9",
     "cross-env": "^7.0.3"
   }
 }
