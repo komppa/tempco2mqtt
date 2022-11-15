@@ -25,7 +25,7 @@ const headers_config: HeaderConfig = {
 
 
 
-const login = (username: string, password: string): Promise<string|Error>  => {
+const login = (username: string, password: string): Promise<string>  => {
     return new Promise((res, rej) => {
 
         const params = new URLSearchParams()
@@ -37,7 +37,7 @@ const login = (username: string, password: string): Promise<string|Error>  => {
 
 
         axios.post(srv_addr + '/api/v0.1/human/user/auth/', params, headers_config)
-            .then(response => {
+            .then((response: any) => {
                 try {
                     const token = response.data.data.token
                     res(token)
@@ -49,7 +49,7 @@ const login = (username: string, password: string): Promise<string|Error>  => {
 }
 
 // Returns smarthome_id
-const getHomes = (email: string, token: string): Promise<string|Error> => {
+const getHomes = (email: string, token: string): Promise<string> => {
     return new Promise((res, rej) => {
 
         const params = new URLSearchParams()
@@ -58,7 +58,7 @@ const getHomes = (email: string, token: string): Promise<string|Error> => {
         params.append('lang', 'fi_FI')
 
         axios.post(srv_addr + '/api/v0.1/human/user/read/', params, headers_config)
-            .then(response => {
+            .then((response: any) => {
                 try {
                     const smarthome_id = response.data.data.smarthomes[0].smarthome_id
                     res(smarthome_id)
@@ -70,7 +70,7 @@ const getHomes = (email: string, token: string): Promise<string|Error> => {
     })
 }
 
-const getDevices = async (token: string, smarthome_id: string): Promise<Array<Device>|Error> => {
+const getDevices = async (token: string, smarthome_id: string): Promise<Array<Device>> => {
     return new Promise((res, rej) => {
 
         const params = new URLSearchParams()
@@ -79,7 +79,7 @@ const getDevices = async (token: string, smarthome_id: string): Promise<Array<De
         params.append('lang', 'fi_FI')
 
         axios.post(srv_addr + '/api/v0.1/human/smarthome/read/', params, headers_config)
-            .then(response => {
+            .then((response: any) => {
                 try {
                     // Server does not give array of devices in a response,
                     // it gives object that contains objects with string keys.
@@ -105,8 +105,8 @@ const changeTemperature = async (token: string, smarthome_id: string, id_device:
         })
         
         axios.post(srv_addr + '/api/v0.1/human/query/push/', params, headers_config)
-            .then(response => response.data)
-            .then(response => {
+            .then((response: any) => response.data)
+            .then((response: any) => {
                 /*
                 @Success:
                 { 

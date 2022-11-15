@@ -1,28 +1,57 @@
-import * as dotenv from 'dotenv'
 import {
     login,
     getHomes,
     getDevices,
     changeTemperature
-} from './tempcoApi.js'
+} from './tempco'
+import { loadConfiguration } from './config'
+import * as mqtt from 'mqtt'
 
 
 
-dotenv.config({
-    path: process.env.PRODUCTION === "1" ? '.env' : '.env.local'
-})
+
 
 
 const app = async () => {
 
-    const user_email = process.env.USER_EMAIL
-    const user_password = process.env.USER_PASSWORD
+    loadConfiguration()
 
-    const token = await login(user_email, user_password)
+    const userEmail = process.env.USER_EMAIL ?? ''
+    const userPassword = process.env.USER_PASSWORD ?? ''
+    const mqttHost = process.env.MQTT_HOST ?? ''
+    const mqttUsername = process.env.MQTT_USERNAME ?? ''
+    const mqttPassword = process.env.MQTT_PASSWORD ?? ''
+
+    const mqttClient = mqtt.connect(`mqtt://${mqttHost}`, {
+        username: mqttUsername,
+        password: mqttPassword
+    })
+
+    mqttClient.on('connect', () => {
+        console.log(`Connected to the MQTT broker "${mqttHost}"`)
+    })
+
+    // Inform that the tempco2mqtt is up
+    mqttClient.publish('tempco2mqtt/availability', 'online')
+
+
+    let token = ''
+
+    try {
+        token = await login(userEmail, userPassword)
+    } catch (err) {
+        console.warn(err.message)
+    }
+
     
     console.log("YOUR TOKEN IS ", token)
 
-    const smarthome_id = await getHomes(user_email, token)
+    let smarthome_id = ''
+    try {
+        smarthome_id = await getHomes(userEmail, token)
+    } catch (err) {
+        console.warn(err.message)
+    }
 
     console.log("YOUR SMARTHOME ID IS ", smarthome_id)
 
