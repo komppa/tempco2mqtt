@@ -9,8 +9,9 @@ Control and query Tempco Touch E3 using MQTT.
 
 Development mode
 
+First, install dependencies
 ```bash
-npm run dev
+npm i
 ```
 
 NOTE: if you are using development environment, please create local .env file by copying the original template
@@ -18,6 +19,11 @@ NOTE: if you are using development environment, please create local .env file by
 cp .env .env.local
 ```
 and change credentials to match yours.
+
+Then run project
+```bash
+npm run dev
+```
 
 Deployment mode
 
