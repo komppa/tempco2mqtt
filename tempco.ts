@@ -9,6 +9,35 @@ import {
 
 const srv_addr = 'https://e3.lvi.eu'
 
+
+const authenticationFailed = ({ data }: {
+    data: {
+        code: {
+            code: string
+            key: string
+            value: string
+        },
+        data: any,
+        parameters: any
+    }
+}) => (
+    /**
+     * Server returns this if the authentication has been failed.
+     * For instance, token has expired
+    {
+        code: { code: '6', key: 'ERR_AUTH', value: 'Authentication failed' },
+        data: {},
+        parameters: {
+        q: 'smarthome',
+        func: 'read',
+        source: 'human',
+        api_version: 'v0.1'
+        }
+    }
+    */
+    data.code.key === 'ERR_AUTH'
+)
+
 const hashPassword = (password: string): string => crypto.createHash('md5').update(password).digest('hex')
 
 
@@ -59,6 +88,11 @@ const getHomes = (email: string, token: string): Promise<string> => {
 
         axios.post(srv_addr + '/api/v0.1/human/user/read/', params, headers_config)
             .then((response: any) => {
+                if (authenticationFailed(response)) {
+                    rej({
+                        authenticationFail: true
+                    })
+                }
                 try {
                     const smarthome_id = response.data.data.smarthomes[0].smarthome_id
                     res(smarthome_id)
@@ -80,6 +114,11 @@ const getDevices = async (token: string, smarthome_id: string): Promise<Array<De
 
         axios.post(srv_addr + '/api/v0.1/human/smarthome/read/', params, headers_config)
             .then((response: any) => {
+                if (authenticationFailed(response)) {
+                    rej({
+                        authenticationFail: true
+                    })
+                }
                 try {
                     // Server does not give array of devices in a response,
                     // it gives object that contains objects with string keys.
@@ -90,6 +129,7 @@ const getDevices = async (token: string, smarthome_id: string): Promise<Array<De
                     rej(error.message)
                 }
             })
+            .catch((err: any) => {})
     })
 }
 
@@ -105,7 +145,14 @@ const changeTemperature = async (token: string, smarthome_id: string, id_device:
         })
         
         axios.post(srv_addr + '/api/v0.1/human/query/push/', params, headers_config)
-            .then((response: any) => response.data)
+            .then((response: any) => {
+                if (authenticationFailed(response)) {
+                    rej({
+                        authenticationFail: true
+                    })
+                }
+                return response.data
+            })
             .then((response: any) => {
                 /*
                 @Success:
