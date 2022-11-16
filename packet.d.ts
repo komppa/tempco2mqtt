@@ -8,7 +8,7 @@ interface DeviceConfig {
 /**
  * Config / discovery packet
  */
-interface ConfigPacket {
+export interface ConfigPacket {
     availability: Array<{
         topic: string
     }>,

@@ -6,6 +6,11 @@ import {
 } from './tempco'
 import { loadConfiguration } from './config'
 import * as mqtt from 'mqtt'
+import {
+    createTemperatureConfigPacket,
+    createStateConfigPacket,
+    createChangeTemperatureConfigPacket,
+} from './packet'
 
 
 
@@ -29,10 +34,30 @@ const app = async () => {
 
     mqttClient.on('connect', () => {
         console.log(`Connected to the MQTT broker "${mqttHost}"`)
+
+        // Inform that the tempco2mqtt is up
+        mqttClient.publish('tempco2mqtt/availability', 'online')
+
+        let d: any;
+
+        // homeassistant/temperature/313/config
+        // d = createTemperatureConfigPacket('313', 'Tempco', 'Touch E3', )
+
+        // homeassistant/switch/313/config
+        // d = createStateConfigPacket('313', 'Tempco', 'Touch E3')
+
+        // homeassistant/climate/313/config
+        d = createChangeTemperatureConfigPacket('313', 'Tempco', 'Touch E3')
+
+        console.log(d)
+
+        // d = createTemperatureConfigPacket("555", "ker", "a", "temperature", '')
+        mqttClient.publish('homeassistant/climate/313/config', JSON.stringify(d), {
+            retain: true
+        })
+
     })
 
-    // Inform that the tempco2mqtt is up
-    mqttClient.publish('tempco2mqtt/availability', 'online')
 
 
     let token = ''
