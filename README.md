@@ -16,7 +16,7 @@ npm i
 
 NOTE: if you are using development environment, please create local .env file by copying the original template
 ```bash
-cp .env .env.local
+cp configuration.yaml configuration.yaml.local
 ```
 and change credentials to match yours.
 

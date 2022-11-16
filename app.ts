@@ -4,36 +4,28 @@ import {
     getDevices,
     changeTemperature
 } from './tempco'
-import { loadConfiguration } from './config'
+import {
+    getMQTTConfiguration,
+    getTempcoCredentials,
+    loadConfiguration,
+} from './config'
 import * as mqtt from 'mqtt'
 import {
-    createTemperatureConfigPacket,
-    createStateConfigPacket,
     createChangeTemperatureConfigPacket,
 } from './packet'
-
-
-
-
 
 
 const app = async () => {
 
     loadConfiguration()
 
-    const userEmail = process.env.USER_EMAIL ?? ''
-    const userPassword = process.env.USER_PASSWORD ?? ''
-    const mqttHost = process.env.MQTT_HOST ?? ''
-    const mqttUsername = process.env.MQTT_USERNAME ?? ''
-    const mqttPassword = process.env.MQTT_PASSWORD ?? ''
-
-    const mqttClient = mqtt.connect(`mqtt://${mqttHost}`, {
-        username: mqttUsername,
-        password: mqttPassword
+    const mqttClient = mqtt.connect(`mqtt://${getMQTTConfiguration().mqtt_host}`, {
+        username: getMQTTConfiguration().mqtt_username,
+        password: getMQTTConfiguration().mqtt_password
     })
 
     mqttClient.on('connect', () => {
-        console.log(`Connected to the MQTT broker "${mqttHost}"`)
+        console.log(`Connected to the MQTT broker "${getMQTTConfiguration().mqtt_host}"`)
 
         // Inform that the tempco2mqtt is up
         mqttClient.publish('tempco2mqtt/availability', 'online')
@@ -58,22 +50,22 @@ const app = async () => {
 
     })
 
-
-
     let token = ''
+    let smarthome_id = ''
 
     try {
-        token = await login(userEmail, userPassword)
+        token = await login(
+            getTempcoCredentials().user_username,
+            getTempcoCredentials().user_password,    
+        )
     } catch (err) {
         console.warn(err.message)
     }
-
     
     console.log("YOUR TOKEN IS ", token)
 
-    let smarthome_id = ''
     try {
-        smarthome_id = await getHomes(userEmail, token)
+        smarthome_id = await getHomes(getTempcoCredentials().user_username, token)
     } catch (err) {
         console.warn(err.message)
     }
@@ -99,7 +91,6 @@ const app = async () => {
     console.log(status)
 
 }
-
 
 
 app()

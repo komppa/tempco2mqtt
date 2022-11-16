@@ -1,0 +1,7 @@
+tempco:
+  username: my_username
+  password: my_password
+mqtt:
+  host: localhost
+  username: my_username
+  password: my_password
