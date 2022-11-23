@@ -11,7 +11,7 @@ const modes = [
 
 const celsiusToFahrenheit = (celsius: number) => celsius * 1.8 + 32
 
-const fahrenheitToCelsius = (fahrenheit: number) => (fahrenheit - 32) / 1.8
+export const fahrenheitToCelsius = (fahrenheit: number) => (fahrenheit - 32) / 1.8
 
 const validateMode = (modeName: Mode): boolean => modes.includes(modeName)
 

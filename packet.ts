@@ -89,6 +89,7 @@ export const createStateConfigPacket = (
  */
 export const createChangeTemperatureConfigPacket = (
     deviceId: string,
+    friendlyName: string,
     manufacturerName: string,
     modelName: string,
 ) => ({
@@ -103,11 +104,11 @@ export const createChangeTemperatureConfigPacket = (
         ],
         manufacturer: manufacturerName,
         model: modelName,
-        name: `${deviceId}`,
+        name: `${deviceId}-${friendlyName}`,
     },
     device_class: 'climate',
     enabled_by_default: true,
-    name: `${deviceId} climate`,
+    name: `${deviceId}-${friendlyName}-climate`,
     
     // Move to createStateConfigPacket
     mode_state_topic: `tempco2mqtt/${deviceId}/climate/state`,

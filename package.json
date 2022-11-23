@@ -4,8 +4,9 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "dev": "cross-env PRODUCTION=0 ts-node app.ts",
-    "run": "cross-env PRODUCTION=1 ts-node app.ts",
+    "dev": "cross-env PRODUCTION=0 MOCK_API=0 ts-node app.ts",
+    "dev:mock": "cross-env PRODUCTION=0 MOCK_API=1 ts-node app.ts",
+    "run": "cross-env PRODUCTION=1 MOCK_API=0 ts-node app.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

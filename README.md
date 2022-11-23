@@ -14,6 +14,9 @@ First, install dependencies
 npm i
 ```
 
+Edit the configuration file of the tempco2mqtt by adding host and credentials for the MQTT broker and adding credentials for the Tempco API.
+Configuration file can be found under project root (./configuration.yaml).
+
 NOTE: if you are using development environment, please create local .env file by copying the original template
 ```bash
 cp configuration.yaml configuration.yaml.local

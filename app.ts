@@ -7,6 +7,7 @@ import {
 import {
     getTempcoCredentials,
     loadConfiguration,
+    mockTempcoApi,
 } from './config'
 import {
     createChangeTemperatureConfigPacket,
@@ -14,7 +15,95 @@ import {
 import { Device } from './tempco.d'
 import { connectMQTTBroker } from './client'
 import { MqttClient } from 'mqtt'
+import { fahrenheitToCelsius } from './modes'
 
+import { fakeDevices } from './fake_devices.js'
+
+
+const MIN_TEMPERATURE = 5
+const MAX_TEMPERATURE = 30
+
+interface TempcoCreds {
+    token: string
+    smarthomeId: string
+}
+
+/**
+ * Array of device ids for an array of devices
+ * @param devices Device array 
+ * @returns 
+ */
+const getDeviceIds = (devices: Array<Device>): Array<string> => devices.map((d: Device) => d.id)
+
+/**
+ * Add listener for a tempco2mqtt
+ * temperature is being changed from the Home Assistant dashboard
+ * @param mqttClient mqtt client that is being used to track incoming messages
+ * @param devices Array of currently available/valid devices
+ */
+const addListenerForTempco = (mqttClient: MqttClient, tempcoCreds: TempcoCreds, devices: Array<Device>) => {
+
+    // Subscribe whole tempco2mqtt topic
+    mqttClient.subscribe(`tempco2mqtt/#`)
+
+    mqttClient.on('message', (topic: string, data: Buffer) => {
+
+        // Check whether the packet is set packet that wants to change
+        // temperature of the heater
+        if (!topic.includes('/set')) {
+            return
+        }
+
+        // Get device id from the topic
+        // F.ex. (tempco2mqtt/<device_ic>/temperature/set)
+        const t = topic.split('/')
+
+        if (t.length !== 4) {
+            return
+        }
+    
+        // Grab device ID from the second place
+        const [_, deviceId] = t
+        
+        if (!getDeviceIds(devices).includes(deviceId)) {
+            console.log(`Cannot change device "${deviceId}" temperature since is is not a valid device`)
+            return
+        }
+
+        // Is temperaure valid? 
+        const temperature = parseInt(data.toString(), 10) || Number.MIN_SAFE_INTEGER
+ 
+        if (
+            temperature === Number.MIN_SAFE_INTEGER ||    // Temperature could not be parsed from MQTT packet's payload
+            temperature < MIN_TEMPERATURE ||
+            temperature > MAX_TEMPERATURE
+        ) {
+            console.log("Could not change temperature because of invalid temperature range or payload is NaN")
+            return
+        }
+        
+        const {
+            token,
+            smarthomeId
+        } = tempcoCreds
+
+        if (!mockTempcoApi()) {
+            changeTemperature(
+                token,
+                smarthomeId,
+                deviceId,
+                'comfort',
+                temperature
+            )
+        }
+
+        // TODO verify that the temperature has changed via REST API
+        // In any case, inform the new state back to the home assistant
+        mqttClient.publish(`tempco2mqtt/${deviceId}/temperature/state`, `${temperature}`)
+
+    })
+
+}
 
 const app = async () => {
     
@@ -25,52 +114,62 @@ const app = async () => {
     // Load YAML
     loadConfiguration()
 
+    // Connect to MQTT broker and send message 'online' to topic 'temco2mqtt/availability'
+    // to enable device discovery and state receiving for tempco devices.  
     let mqttClient = <MqttClient>await connectMQTTBroker()
 
     try {
-        token = await login(
-            getTempcoCredentials().user_username,
-            getTempcoCredentials().user_password,    
-        )
+        if (!mockTempcoApi()) {
+            token = await login(
+                getTempcoCredentials().user_username,
+                getTempcoCredentials().user_password,    
+            )    
+        }
+        
     } catch (err) {
         console.warn(err.message)
     }
     
     try {
-        smarthome_id = await getHomes(getTempcoCredentials().user_username, token)
+        if (!mockTempcoApi()) {
+            smarthome_id = await getHomes(getTempcoCredentials().user_username, token)
+        }
     } catch (err) {
         console.warn(err.message)
     }
 
-    try {
+    if (mockTempcoApi()) {
+        devices = fakeDevices
+    } else {
         devices = await getDevices(token, smarthome_id)
-        
-        devices.forEach((device: Device) => {
-            let d = createChangeTemperatureConfigPacket(`${device.id}`, 'Yali', 'Digital')
+    }
+
+
+    // Add listener for tempco2mqtt 
+    addListenerForTempco(mqttClient, { token, smarthomeId: smarthome_id }, devices)
     
-            // d = createTemperatureConfigPacket("555", "ker", "a", "temperature", '')
+    try {
+
+        devices.forEach((device: Device) => {
+            let d = createChangeTemperatureConfigPacket(`${device.id}`, `${device.label_interface}`, 'Yali', 'Digital')
+    
+            // Tell that there are device like this
             mqttClient.publish(`homeassistant/climate/${device.id}/config`, JSON.stringify(d), {
                 retain: true
             })
+
+            // After one second of discovery pakcet, tell the temperature for the device
+            setTimeout(() => {
+                // Tell the temperature for the heater
+                mqttClient.publish(`tempco2mqtt/${device.id}/temperature/state`, `${fahrenheitToCelsius(Number(device.temperature_air) / 10)}`)
+            }, 1000)
+            
         })
 
 
     } catch (err: any) {
         console.log("Could not fetch devices since", err.authenticationFail ? "auhentication failed" : "unknown reason")
     }
-
-    
-    /*
-    const status = await changeTemperature(
-        token,
-        smarthome_id,
-        first_device_id,
-        'comfort',
-        21   // New temperature in celsius
-    )
-
-    console.log(status)
-    */
 
 }
 

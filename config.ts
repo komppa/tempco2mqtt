@@ -17,6 +17,11 @@ export const loadConfiguration = () => {
 }
 
 /**
+ * Should read Tempco API be used or fake data from a file
+ */
+export const mockTempcoApi = () => process.env.MOCK_API === "1" ? true : false
+
+/**
  * Get credentials from the saved yaml
  */
 export const getTempcoCredentials = () => ({
