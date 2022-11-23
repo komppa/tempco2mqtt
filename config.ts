@@ -36,3 +36,14 @@ export const getMQTTConfiguration = () => ({
     mqtt_username: configuration.mqtt.username,
     mqtt_password: configuration.mqtt.password,
 })
+
+/**
+ * Get how many seconds should be wait between each call to Tempco API
+ * @returns Interval in seconds. Default: 30s
+ */
+export const getTempco2mqttConfiguration = () => ({
+    updateInterval: parseInt(
+        configuration.tempco2mqtt.update_interval,
+        10
+    ) || 30
+})

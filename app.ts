@@ -8,6 +8,7 @@ import {
     getTempcoCredentials,
     loadConfiguration,
     mockTempcoApi,
+    getTempco2mqttConfiguration,
 } from './config'
 import {
     createChangeTemperatureConfigPacket,
@@ -105,6 +106,25 @@ const addListenerForTempco = (mqttClient: MqttClient, tempcoCreds: TempcoCreds, 
 
 }
 
+const fetchTemperatureLoop = (mqttClient: MqttClient, tempcoCreds: TempcoCreds) => {
+
+    const { token, smarthomeId } = tempcoCreds
+
+    getDevices(token, smarthomeId)
+        .then((devices: Array<Device>) => {
+            devices.forEach((device: Device) => {
+                mqttClient.publish(`tempco2mqtt/${device.id}/temperature/state`, `${fahrenheitToCelsius(Number(device.temperature_air) / 10)}`)
+            })
+        })
+
+    // After timeout that is defined in configuration.yaml, start this loop again
+    setTimeout(() => {
+        fetchTemperatureLoop(mqttClient, tempcoCreds)
+    }, Math.floor(
+        getTempco2mqttConfiguration().updateInterval * 1000
+    ))
+}
+
 const app = async () => {
     
     let token = ''
@@ -147,6 +167,10 @@ const app = async () => {
 
     // Add listener for tempco2mqtt 
     addListenerForTempco(mqttClient, { token, smarthomeId: smarthome_id }, devices)
+
+    // Start infinite loop for checking the temperature from the smarthome
+    // But wait some amount of time before doing so on the startup (60s)
+    setTimeout(() => fetchTemperatureLoop(mqttClient, { token, smarthomeId: smarthome_id }), 30 * 1000)
     
     try {
 

@@ -5,3 +5,5 @@ mqtt:
   host: localhost
   username: my_username
   password: my_password
+tempco2mqtt:
+  update_interval: 30
