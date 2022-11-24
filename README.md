@@ -1,6 +1,10 @@
 # Tempco Touch E3 to MQTT
-
 Control and query Tempco Touch E3 using MQTT.
+<div>
+    <img width="100" height="100" src="images/t2z_logo.png">
+</div>
+<br />
+
 
 
 ## Running the SW
@@ -33,3 +37,11 @@ Deployment mode
 ```bash
 npm run run
 ```
+
+## Architecture
+
+<br />
+<div>
+    <img width="600" src="images/tempco2mqtt_arch.png">
+</div>
+<br />
