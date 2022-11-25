@@ -1,4 +1,4 @@
 node_modules
 .env.local
 configuration.yaml.local
-fake_devices.js
+fake_devices.ts
