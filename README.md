@@ -1,7 +1,7 @@
 # Tempco Touch E3 to MQTT
 Control and query Tempco Touch E3 using MQTT.
 <div>
-    <img width="100" height="100" src="images/t2z_logo.png">
+    <img width="100" height="100" src="images/logo.jpg">
 </div>
 <br />
 
@@ -42,6 +42,6 @@ npm run run
 
 <br />
 <div>
-    <img width="600" src="images/tempco2mqtt_arch.png">
+    <img width="600" src="images/tempco2mqtt_arch.jpg">
 </div>
 <br />
