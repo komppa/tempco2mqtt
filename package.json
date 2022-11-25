@@ -7,7 +7,9 @@
     "dev": "cross-env PRODUCTION=0 MOCK_API=0 ts-node app.ts",
     "dev:mock": "cross-env PRODUCTION=0 MOCK_API=1 ts-node app.ts",
     "run": "cross-env PRODUCTION=1 MOCK_API=0 ts-node app.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pre": "[ -d \"build\" ] && rm -rf build || echo \"build did not exist\"",
+    "build": "npx tsc"
   },
   "author": "",
   "license": "MIT",
@@ -22,6 +24,7 @@
   "devDependencies": {
     "@types/dotenv": "^8.2.0",
     "@types/node": "^18.11.9",
+    "@types/ws": "^8.5.3",
     "cross-env": "^7.0.3"
   }
 }

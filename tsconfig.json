@@ -5,8 +5,9 @@
       "allowJs": true,
       "moduleResolution": "node",
       "preserveConstEnums": true,
-      "sourceMap": true
+      "sourceMap": true,
+      "outDir": "build"
     },
-    "include": ["src/**/*"],
+    "include": ["**/*"],
     "exclude": ["node_modules", "**/*.spec.ts"]
 }
