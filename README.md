@@ -1,4 +1,7 @@
 # Tempco Touch E3 to MQTT
+
+![build](https://github.com/komppa/tempco2mqtt/actions/workflows/build.yaml/badge.svg)
+
 Control and query Tempco Touch E3 using MQTT.
 <div>
     <img width="100" height="100" src="images/logo.jpg">

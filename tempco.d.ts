@@ -33,7 +33,7 @@ export interface Device {
     consigne_manuel: string
     min_set_point: string
     max_set_point: string
-    date_start_boost: null
+    date_start_boost: any   // Server "always" returns null, cannot be sure
     time_boost: string
     nv_mode: string
     temperature_air: string
@@ -53,7 +53,7 @@ export interface Device {
     fan_speed: string
     error_code: string
     bit_override: string
-    fan_error: null,
+    fan_error: any, // Server "always" returns null, cannot be sure
     time_boost_format_chrono: {
         d: string   // f.ex. '00'
         h: string

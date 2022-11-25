@@ -18,7 +18,7 @@ import { connectMQTTBroker } from './client'
 import { MqttClient } from 'mqtt'
 import { fahrenheitToCelsius } from './modes'
 
-import { fakeDevices } from './fake_devices.js'
+import { fakeDevices } from './fake_devices'
 
 
 const MIN_TEMPERATURE = 5

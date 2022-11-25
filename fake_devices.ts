@@ -13,7 +13,7 @@ export const fakeDevices = [
         consigne_manuel: '700',
         min_set_point: '400',
         max_set_point: '900',
-        date_start_boost: null,
+        date_start_boost: null as null,
         time_boost: '7200',
         nv_mode: '0',
         temperature_air: '700',
@@ -33,7 +33,7 @@ export const fakeDevices = [
         fan_speed: '0',
         error_code: '0',
         bit_override: '0',
-        fan_error: null,
+        fan_error: null as null,
         time_boost_format_chrono: { d: '00', h: '00', m: '00', s: '00' }
     }
 ]
