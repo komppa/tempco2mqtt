@@ -45,6 +45,6 @@ npm run run
 
 <br />
 <div>
-    <img width="600" src="images/tempco2mqtt_arch.jpg">
+    <img width="600" src="images/tempco2mqtt_arch.png">
 </div>
 <br />
