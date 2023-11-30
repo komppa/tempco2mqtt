@@ -182,8 +182,12 @@ const app = async () => {
     if (mqttClient.connected) {
         logger.info(`Connected to the MQTT broker "${mqtt.mqttConfiguration.mqtt_host}"`)
 
-        // Inform that the tempco2mqtt is up. Atleast for Home Assistant (discovery) since it wants to know
-        mqttClient.publish('tempco2mqtt/availability', 'online')
+        // Inform that the tempco2mqtt is up. Atleast for Home Assistant (discovery) since it wants to know.
+        // Once every 3 seconds that Home Assistant does not show "unknown" for the device state even if they are
+        // sending the state to the MQTT broker.
+        setInterval(() => {
+            mqttClient.publish('tempco2mqtt/availability', 'online')
+        }, 3000)
     }
 
 
@@ -226,24 +230,27 @@ const app = async () => {
     addListenerForTempco(mqttClient, { token, smarthomeId: smarthome_id }, devices)
 
     // Start infinite loop for checking the temperature from the smarthome
-    // But wait some amount of time before doing so on the startup (10s). // TODO Why?
+    // But wait some amount of time before doing so on the startup (10s), becuase
+    // we send temperature below that we got when we fetched devices list
     setTimeout(() => fetchTemperatureLoop(mqttClient, { token, smarthomeId: smarthome_id }), 10 * 1000)
     
     try {
 
         devices.forEach((device: Device) => {
-            let d = createChangeTemperatureConfigPacket(`${device.id}`, `${device.label_interface}`, 'Yali', 'Digital')
-    
-            // Tell that there are device like this
-            mqttClient.publish(`homeassistant/climate/${device.id}/config`, JSON.stringify(d), {
-                retain: true
-            })
 
-            // After one second of discovery pakcet, tell the temperature for the device
+            // Tell the temperature for the heater
+            mqttClient.publish(`tempco2mqtt/${device.id}/temperature/state`, `${fahrenheitToCelsius(Number(device.temperature_air) / 10)}`)
+
+            // Tell that there are new device for device discovery via MQTT for Home Assistant
+            let d = createChangeTemperatureConfigPacket(`${device.id}`, `${device.label_interface}`, 'Yali', 'Digital')
+
+            // After one second of temperature pakcet, tell that there (might) be new devices (/discovery)
             setTimeout(() => {
-                // Tell the temperature for the heater
-                mqttClient.publish(`tempco2mqtt/${device.id}/temperature/state`, `${fahrenheitToCelsius(Number(device.temperature_air) / 10)}`)
-            }, 1000)
+                // Tell that there are device like this
+                mqttClient.publish(`homeassistant/climate/${device.id}/config`, JSON.stringify(d), {
+                    retain: true
+                })
+            }, 5000)
             
         })
 
