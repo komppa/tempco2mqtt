@@ -45,5 +45,5 @@ export const getTempco2mqttConfiguration = () => ({
     updateInterval: parseInt(
         configuration.tempco2mqtt.update_interval,
         10
-    ) || 30
+    ) || 30 // Or by defualt 30s
 })

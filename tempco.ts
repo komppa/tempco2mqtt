@@ -129,7 +129,7 @@ const getDevices = async (token: string, smarthome_id: string): Promise<Array<De
                     rej(error.message)
                 }
             })
-            .catch((err: any) => {})
+            .catch((err: any) => rej(err))
     })
 }
 

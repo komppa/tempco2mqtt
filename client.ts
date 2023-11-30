@@ -16,13 +16,12 @@ export const connectMQTTBroker = async () => {
         })
 
         mqttClient.on('connect', () => {
-            console.log(`Connected to the MQTT broker "${getMQTTConfiguration().mqtt_host}"`)
-    
-            // Inform that the tempco2mqtt is up
-            mqttClient.publish('tempco2mqtt/availability', 'online')
 
             // MQTT client is ready
-            res(mqttClient)
+            res({
+                mqttClient: mqttClient,
+                mqttConfiguration: getMQTTConfiguration()
+            })
     
         })
 
