@@ -122,3 +122,12 @@ export const createChangeTemperatureConfigPacket = (
     temperature_command_topic: `tempco2mqtt/${deviceId}/temperature/set`,
     temperature_state_topic: `tempco2mqtt/${deviceId}/temperature/state`
 })
+
+
+/**
+ * UnDiscovers device
+ */
+export const removeDeviceConfigPacket = (deviceId: string) => ({
+    topic: `homeassistant/climate/${deviceId}/config`,
+    payload: {},
+})
