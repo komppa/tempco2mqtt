@@ -30,9 +30,14 @@ cp configuration.yaml configuration.yaml.local
 ```
 and change credentials to match yours.
 
-Then run project
+Then run project using real connection to the Tempco servers
 ```bash
 npm run dev
+```
+
+To run project using mocked Tempco API (one heater defined in fake_devices.ts), run
+```bash
+npm run dev:mock
 ```
 
 Deployment mode
