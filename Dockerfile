@@ -10,4 +10,4 @@ COPY . /home/ci/project/.
 
 RUN npm run pre
 
-CMD ["npm", "run", "build"]
+CMD ["npm", "run", "run"]
