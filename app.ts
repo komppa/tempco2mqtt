@@ -12,6 +12,7 @@ import {
 } from './config'
 import {
     createChangeTemperatureConfigPacket,
+    removeDeviceConfigPacket,
 } from './packet'
 import { Device } from './tempco.d'
 import { connectMQTTBroker } from './client'
@@ -124,7 +125,9 @@ const addListenerForTempco = (mqttClient: MqttClient, tempcoCreds: TempcoCreds, 
             logger.debug(`FAKE: Changing temperature of device "${deviceId}" to ${temperature}°C while mocking...`)
         }
 
-        // TODO verify that the temperature has changed via REST API
+        // TODO verify that the temperature has changed via REST API - 
+        //      wont do since after some time, new temperature is fetched from the API and it will override our value if that did not succeed
+        
         // In any case, inform the new state back to the home assistant
         mqttClient.publish(`tempco2mqtt/${deviceId}/temperature/state`, `${temperature}`)
 
