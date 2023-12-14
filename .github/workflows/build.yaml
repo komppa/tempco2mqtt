@@ -2,7 +2,7 @@ name: Build
 
 on:
   push:
-    branches: [ "master", "workflow" ]
+    branches: [ "workflow" ]
   workflow_dispatch:
 
 jobs:
